@@ -82,6 +82,11 @@ static void parse_commandline(int argc, char *argv[]) {
         ("benchmark", "Test network and exit. Default args:\n-v3200 --noponder "
                       "-m0 -t1 -s1.")
         ("cpu-only", "Use CPU-only implementation and do not use GPU.")
+        ("norm,P", po::value<float>()->default_value(cfg_norm),
+                   "Use p-norm. Higher p values gives more weight to good moves.\n"
+                   "1 = Normal UCT algorithm (average).\n"
+                   "2 = Euclidian norm.\n"
+                   "100 = Approximation of minimax.\n")
         ;
 #ifdef USE_OPENCL
     po::options_description gpu_desc("GPU options");
@@ -272,6 +277,10 @@ static void parse_commandline(int argc, char *argv[]) {
 
     if (vm.count("cpu-only")) {
         cfg_cpu_only = true;
+    }
+
+    if (vm.count("norm")) {
+        cfg_norm = vm["norm"].as<float>();;
     }
 
     if (vm.count("playouts")) {

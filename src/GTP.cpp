@@ -69,6 +69,7 @@ precision_t cfg_precision;
 #endif
 #endif
 float cfg_puct;
+float cfg_norm;
 float cfg_softmax_temp;
 float cfg_fpu_reduction;
 std::string cfg_weightsfile;
@@ -111,6 +112,7 @@ void GTP::setup_default_parameters() {
 #endif
 #endif
     cfg_puct = 0.8f;
+    cfg_norm = 1.0f;
     cfg_softmax_temp = 1.0f;
     cfg_fpu_reduction = 0.25f;
     // see UCTSearch::should_resign

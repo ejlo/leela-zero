@@ -208,13 +208,10 @@ int UCTNode::get_visits() const {
 float UCTNode::get_raw_eval(int tomove, int virtual_loss) const {
     auto visits = get_visits() + virtual_loss;
     assert(visits > 0);
-    auto blackeval = get_blackevals();
+    auto blackeval = pow(get_blackevals() / double(visits), 1.0/(double)cfg_norm);
+    auto eval = 2.0f * (static_cast<float>(blackeval) - 0.5f);
     if (tomove == FastBoard::WHITE) {
-        blackeval += static_cast<double>(virtual_loss);
-    }
-    auto eval = static_cast<float>(blackeval / double(visits));
-    if (tomove == FastBoard::WHITE) {
-        eval = 1.0f - eval;
+        eval = 1.0f - (eval + virtual_loss / float(visits));;
     }
     return eval;
 }
@@ -238,7 +235,7 @@ double UCTNode::get_blackevals() const {
 }
 
 void UCTNode::accumulate_eval(float eval) {
-    atomic_add(m_blackevals, double(eval));
+    atomic_add(m_blackevals, std::pow(0.5 * (1.0 + (double)eval), (double)cfg_norm));
 }
 
 UCTNode* UCTNode::uct_select_child(int color, bool is_root) {
